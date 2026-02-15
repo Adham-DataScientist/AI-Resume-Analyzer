@@ -24,3 +24,16 @@ The analyzer looks for key roles in:
 1. Clone the repository:
    ```bash
    git clone [https://github.com/Adham-DataScientist/AI-Resume-Analyzer.git](https://github.com/Adham-DataScientist/AI-Resume-Analyzer.git)
+
+👤 Author
+Adham Mahmoud
+
+🎓 Management Information Systems (MIS) Graduate 2024.
+
+💡 Data Science & Python Enthusiast.
+
+🔗 LinkedIn Profile
+https://www.linkedin.com/in/adham-mahmoud-a680032a9
+
+🖥️ GitHub Portfolio
+https://github.com/Adham-DataScientist
