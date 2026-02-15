@@ -1,35 +1,57 @@
 import streamlit as st
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+from PyPDF2 import PdfReader # مكتبة قراءة الـ PDF
 
-st.set_page_config(page_title="AI Resume Analyzer", page_icon="📄")
+st.set_page_config(page_title="AI Resume Analyzer Pro", page_icon="📄")
 
-st.title("📄 AI Resume Analyzer")
-st.subheader("حلل سيرتك الذاتية بضغطة زر")
+st.title("📄 AI Resume Analyzer Pro")
+st.subheader("ارفع الـ CV بتاعك وشوف الذكاء الاصطناعي هيقولك إيه!")
 
-# 1. مكان رفع الملف أو كتابة النص
-text_input = st.text_area("أو الصق نص السيرة الذاتية هنا مباشرة:", height=200)
+# 1. خاصية رفع الملف
 
-if st.button("تحليل الآن 🔍"):
-    if text_input:
-        # 2. تقسيم الصفحة لنتائج
-        col1, col2 = st.columns(2)
+
+uploaded_file = st.file_uploader("ارفع سيرتك الذاتية (PDF)", type="pdf")
+
+# 2. تحويل الـ PDF لنص
+resume_text = ""
+if uploaded_file is not None:
+    pdf_reader = PdfReader(uploaded_file)
+    for page in pdf_reader.pages:
+        resume_text += page.extract_text()
+
+# لو مرفعش ملف، ممكن يكتب نص عادي
+if not resume_text:
+    resume_text = st.text_area("أو الصق نص السيرة الذاتية هنا:", height=150)
+
+if st.button("بدء التحليل الشامل 🔍"):
+    if resume_text:
+        # حساب السكور (Score) بشكل بسيط
+        skills = ["Python", "SQL", "Machine Learning", "Data Analysis", "Communication", "Project Management", "Excel"]
+        found_skills = [s for s in skills if s.lower() in resume_text.lower()]
+        score = (len(found_skills) / len(skills)) * 100
+
+        # عرض النتائج
+        col1, col2 = st.columns([1, 1])
         
         with col1:
+            st.markdown("### 📊 تقييم الـ CV")
+            st.metric("قوة السيرة الذاتية", f"{int(score)}%")
+            st.progress(int(score))
+            
             st.markdown("### ✅ المهارات المكتشفة")
-            # هنا ممكن نعمل بحث عن كلمات معينة
-            skills = ["Python", "SQL", "Machine Learning", "Communication", "Management"]
-            found = [s for s in skills if s.lower() in text_input.lower()]
-            for f in found:
-                st.success(f)
+            if found_skills:
+                for f in found_skills:
+                    st.success(f)
+            else:
+                st.info("لم نجد مهارات تقنية معروفة، حاول إضافة كلمات مفتاحية أكتر.")
         
         with col2:
             st.markdown("### ☁️ سحابة الكلمات")
-            # صنع الـ WordCloud
-            wc = WordCloud(background_color="white").generate(text_input)
+            wc = WordCloud(background_color="white", width=800, height=500).generate(resume_text)
             fig, ax = plt.subplots()
             ax.imshow(wc, interpolation='bilinear')
             ax.axis("off")
             st.pyplot(fig)
     else:
-        st.warning("من فضلك دخل نص الـ CV أولاً!")
+        st.warning("دخل ملف PDF أو اكتب نص عشان نبدأ!")
